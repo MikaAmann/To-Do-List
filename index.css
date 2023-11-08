@@ -1,0 +1,25 @@
+#task-control{
+    border: 1px solid black;
+    padding: 10px;
+    border-radius: 5px;
+    
+}
+
+input{
+    margin: 10px 5px;
+}
+
+ul{
+    list-style: none;
+    padding: 0px;
+    
+}
+
+ul li{
+    margin: 10px;
+    padding: 10px 15px;
+    border: 1px solid black;
+    border-radius: 5px;
+
+
+}
