@@ -15,11 +15,21 @@ ul{
     
 }
 
-ul li{
+.task{
+    display: flex;
     margin: 10px;
     padding: 10px 15px;
     border: 1px solid black;
     border-radius: 5px;
 
+}
 
+.action-btn{
+    display: flex;
+    justify-content: end;
+    padding: 10px;
+    
+}
+.edit{
+    margin-right: 10px;
 }

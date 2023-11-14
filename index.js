@@ -31,6 +31,7 @@ addItemBtn.addEventListener("click", function() {
 
     newTask.id = taskIDinDB
 
+    //set value in firebase
     set(ref(database, 'toDoList/' +taskIDinDB), {
         id: newTask.id,
         name: newTask.name,
@@ -40,8 +41,6 @@ addItemBtn.addEventListener("click", function() {
 
     clearInputFields();
 })
-
-
 
 onValue(toDoListInDB, function(snapshot) {
     
@@ -86,10 +85,85 @@ function clearInputFields(){
 function appendItemToTaskListEl(item){
     let itemObject = item[1]
 
-    let newEl = document.createElement("li")
+    let itemID = itemObject.id
 
-    newEl.textContent = `Name: ${itemObject.name}, Date: ${itemObject.date}, Status: ${itemObject.state}`
-    
-    taskList.append(newEl)
+    // create div containing all tasks
+    const newTask = document.createElement("div")
+    newTask.classList.add('task')
+    newTask.setAttribute("id", itemID);
+
+    const taskContent = document.createElement('div')
+    taskContent.classList.add('content')
+
+    newTask.appendChild(taskContent)
+
+    const taskNameInput = createInputField(taskContent, itemObject.name, itemID, "_name")
+    const taskDateInput = createInputField(taskContent, itemObject.date, itemID, "_date")
+    const taskStateInput = createInputField(taskContent, itemObject.state, itemID, "_state")
+
+    const actionEL = document.createElement("div")
+    actionEL.classList.add('action-btn')
+
+    const editBtnEl = createActionButton("edit", itemID+"_edit", "EDIT")
+    const deleteBtnEl = createActionButton("delete", itemID+"_delete", "DELETE")
+
+
+    editBtnEl.addEventListener("click", function() {
+        if (editBtnEl.innerText.toLowerCase() == "edit") {
+
+            editBtnEl.innerText = "SAVE";
+            taskNameInput.removeAttribute("readonly")
+            taskDateInput.removeAttribute("readonly");
+            taskStateInput.removeAttribute("readonly")
+            taskNameInput.focus();
+
+        } else {
+            editBtnEl.innerText = "EDIT";
+            taskNameInput.setAttribute("readonly", "readonly");
+            taskDateInput.setAttribute("readonly", "readonly");
+            taskStateInput.setAttribute("readonly", "readonly");
+
+            set(ref(database, 'toDoList/'+ itemID ), {
+                id: itemID,
+                name: taskNameInput.value,
+                date: taskDateInput.value,
+                state: taskStateInput.value
+            });
+        }
+    })
+   
+    deleteBtnEl.addEventListener("click", function(){
+        let exactLocationOfItemInDB = ref(database,`toDoList/${itemID}`)
+        remove(exactLocationOfItemInDB)
+    })
+    taskList.appendChild(newTask)
+
+    actionEL.appendChild(editBtnEl)
+    actionEL.appendChild(deleteBtnEl)
+
+    newTask.appendChild(actionEL)
  
 }
+
+function createInputField(taskContent, inputValue, id, typeForID){
+    const task_input_el = document.createElement('input');
+	task_input_el.classList.add('text');
+    task_input_el.setAttribute("id", id + typeForID )
+	task_input_el.type = 'text';
+	task_input_el.value = inputValue;
+	task_input_el.setAttribute('readonly', 'readonly');
+
+    taskContent.appendChild(task_input_el)
+
+    return task_input_el
+}
+
+function createActionButton(btnClass, id, text){
+    const new_Btn_El = document.createElement('button')
+    new_Btn_El.classList.add(btnClass)
+    new_Btn_El.setAttribute("id", id)
+    new_Btn_El.innerHTML= text
+
+    return new_Btn_El
+}
+
