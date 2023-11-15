@@ -14,6 +14,9 @@ const taskNameEl = document.getElementById("add-name");
 const taskDateEl = document.getElementById("add-date");
 const addItemBtn = document.getElementById("add-btn");
 const taskList = document.getElementById("task-list");
+const filterBtn = document.getElementById("filter-btn")
+
+let taskArray = [] //delete from here when delteted!
 
 addItemBtn.addEventListener("click", function() {
 
@@ -25,13 +28,14 @@ addItemBtn.addEventListener("click", function() {
     let inputNameValue = taskNameEl.value
     let inputDateValue = taskDateEl.value
 
+    //create Object and push to Database
     let newTask = taskToObject(inputNameValue, inputDateValue)
 
     let taskIDinDB = push(toDoListInDB, newTask).key
 
     newTask.id = taskIDinDB
 
-    //set value in firebase
+    //set ID value in firebase
     set(ref(database, 'toDoList/' +taskIDinDB), {
         id: newTask.id,
         name: newTask.name,
@@ -47,6 +51,8 @@ onValue(toDoListInDB, function(snapshot) {
     if(snapshot.exists()){
 
         let itemsArray = Object.entries(snapshot.val())
+
+       // console.log(itemsArray)
         
         clearTaskListEl()
     
@@ -70,6 +76,9 @@ function taskToObject(inputNameValue, inputDateValue){
         date: inputDateValue,
         state: "New"
     }
+
+    //taskArray.push(taskObj)
+    //console.log(taskArray)
     return taskObj
 }
 
@@ -85,29 +94,55 @@ function clearInputFields(){
 function appendItemToTaskListEl(item){
     let itemObject = item[1]
 
+    taskArray.push(itemObject)
+    console.log(taskArray)
+
     let itemID = itemObject.id
 
-    // create div containing all tasks
-    const newTask = document.createElement("div")
+    // create div containing a task
+    const newTask = document.createElement("li")
     newTask.classList.add('task')
     newTask.setAttribute("id", itemID);
 
+    // create div containing all input fields
     const taskContent = document.createElement('div')
     taskContent.classList.add('content')
 
     newTask.appendChild(taskContent)
 
-    const taskNameInput = createInputField(taskContent, itemObject.name, itemID, "_name")
-    const taskDateInput = createInputField(taskContent, itemObject.date, itemID, "_date")
-    const taskStateInput = createInputField(taskContent, itemObject.state, itemID, "_state")
+    const taskNameInput = createInputField(taskContent, itemObject.name, itemID, "_name", 'name')
+    const taskDateInput = createInputField(taskContent, itemObject.date, itemID, "_date",'date')
+    const taskStateInput = createInputField(taskContent, itemObject.state, itemID, "_state", 'state')
 
+    taskStateInput.addEventListener("click", function(){
+        let currtentVal = taskStateInput.value
+
+        console.log(currtentVal)
+
+        switch(currtentVal) {
+            case "New":
+              taskStateInput.value = "Active"
+              console.log("ddd")
+              break;
+            case "Active":
+                taskStateInput.value = "Closed"
+              break;
+            case "Closed":
+                taskStateInput.value = "New"
+              break;
+            default:
+                console.log("default")  
+          }
+    })
+
+    // create div containing the delete and edit buttons
     const actionEL = document.createElement("div")
     actionEL.classList.add('action-btn')
 
     const editBtnEl = createActionButton("edit", itemID+"_edit", "EDIT")
     const deleteBtnEl = createActionButton("delete", itemID+"_delete", "DELETE")
 
-
+    // apply logik to delete and edit buttons
     editBtnEl.addEventListener("click", function() {
         if (editBtnEl.innerText.toLowerCase() == "edit") {
 
@@ -136,6 +171,8 @@ function appendItemToTaskListEl(item){
         let exactLocationOfItemInDB = ref(database,`toDoList/${itemID}`)
         remove(exactLocationOfItemInDB)
     })
+
+    // append HTML with the new Elements
     taskList.appendChild(newTask)
 
     actionEL.appendChild(editBtnEl)
@@ -145,9 +182,9 @@ function appendItemToTaskListEl(item){
  
 }
 
-function createInputField(taskContent, inputValue, id, typeForID){
+function createInputField(taskContent, inputValue, id, typeForID, classValue){
     const task_input_el = document.createElement('input');
-	task_input_el.classList.add('text');
+	task_input_el.classList.add("'"+classValue+"'");
     task_input_el.setAttribute("id", id + typeForID )
 	task_input_el.type = 'text';
 	task_input_el.value = inputValue;
@@ -166,4 +203,32 @@ function createActionButton(btnClass, id, text){
 
     return new_Btn_El
 }
+
+
+
+filterBtn.addEventListener("click", function() {
+    let list = document.getElementById("task-list");
+    let items = list.querySelectorAll("li");
+   
+    let filteredArray = taskArray
+    //var itemsArray = Array.prototype.slice.call(items);
+    //console.log(itemsArray)
+   
+    filteredArray.sort(function(a, b) {
+      var dateA = new Date(a.datum);
+      var dateB = new Date(b.datum);
+      return dateA - dateB;
+    });
+
+    console.log(taskArray)
+    
+    /* items.forEach(function(item) {
+      list.removeChild(item);
+    });
+    
+    filteredArray.forEach(function(item) {
+      list.appendChild(item);
+    }); */
+})
+
 

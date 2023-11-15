@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sortierte Liste mit Button</title>
+</head>
+<body>
+
+<ul id="sortable-list">
+  <li>
+    <div>
+      <input type="text" class="date-input" value="2023-11-15">
+      <!-- Weitere Inhalte hier -->
+    </div>
+  </li>
+  <li>
+    <div>
+      <input type="text" class="date-input" value="2023-11-12">
+      <!-- Weitere Inhalte hier -->
+    </div>
+  </li>
+  <li>
+    <div>
+      <input type="text" class="date-input" value="2023-11-20">
+      <!-- Weitere Inhalte hier -->
+    </div>
+  </li>
+  <li>
+    <div>
+      <input type="text" class="date-input" value="2023-11-08">
+      <!-- Weitere Inhalte hier -->
+    </div>
+  </li>
+  <li>
+    <div>
+      <input type="text" class="date-input" value="2023-11-25">
+      <!-- Weitere Inhalte hier -->
+    </div>
+  </li>
+  <!-- Füge weitere <li>-Elemente hier hinzu -->
+</ul>
+
+<button onclick="sortListByDate()">Liste sortieren</button>
+
+<script>
+  function sortListByDate() {
+    var list = document.getElementById("sortable-list");
+    var items = list.querySelectorAll("li");
+    
+    var itemsArray = Array.prototype.slice.call(items);
+
+    console.log(itemsArray)
+    
+    itemsArray.sort(function(a, b) {
+      var dateA = new Date(a.querySelector(".date-input").value);
+      var dateB = new Date(b.querySelector(".date-input").value);
+      return dateA - dateB;
+    });
+    
+    items.forEach(function(item) {
+      list.removeChild(item);
+    });
+    
+    itemsArray.forEach(function(item) {
+      list.appendChild(item);
+    });
+  }
+</script>
+
+</body>
+</html>
