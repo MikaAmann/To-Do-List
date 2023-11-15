@@ -1,5 +1,21 @@
+:root{
+    --black: #272932;
+    --blue: #6320EE;
+    --purple: #8075FF;
+    --pale-purple: #E8D7F1;
+    --white: #EAEAEA;
+}
+
+body{
+    font-family: "Fira sans", sans-serif;
+    background-color: var(--black);
+    color: var(--pale-purple);
+}
+
+
 #task-control{
     border: 1px solid black;
+    background-color: var(--blue);
     padding: 10px;
     border-radius: 5px;
     
@@ -7,6 +23,15 @@
 
 input{
     margin: 10px 5px;
+    background-color: var(--purple);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: var(--black);
+    font-size: large;
+    font-weight: 500;
+    border-radius: 20px;
+
 }
 
 ul{
@@ -20,16 +45,30 @@ ul{
     margin: 10px;
     padding: 10px 15px;
     border: 1px solid black;
-    border-radius: 5px;
+    border-radius: 30px;
+    background-color: var(--blue);
 
 }
 
+button{
+    background-color: var(--pale-purple);
+    border-radius: 10px;
+    padding: 10px 15px;
+
+}
+
+button:hover{
+    box-shadow: var(--black);
+}
 .action-btn{
     display: flex;
     justify-content: end;
     padding: 10px;
+    border: none;
+    border-radius: 40px;
     
 }
 .edit{
     margin-right: 10px;
+    
 }
