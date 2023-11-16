@@ -14,9 +14,16 @@ const taskNameEl = document.getElementById("add-name");
 const taskDateEl = document.getElementById("add-date");
 const addItemBtn = document.getElementById("add-btn");
 const taskList = document.getElementById("task-list");
-const filterBtn = document.getElementById("filter-btn")
 
-let taskArray = [] //delete from here when delteted!
+const filterDateBtn = document.getElementById("filterDate-btn")
+const filterStateBtn = document.getElementById("filterState-btn")
+
+const filterStateInput = document.getElementById("filter-input")
+const undoFiletBtn = document.getElementById("undoFilter-btn")
+
+
+let itemsArray = [] 
+let undoFilterArray = [] //saves initial order of tasks to undo filter when needed
 
 addItemBtn.addEventListener("click", function() {
 
@@ -50,10 +57,8 @@ onValue(toDoListInDB, function(snapshot) {
     
     if(snapshot.exists()){
 
-        let itemsArray = Object.entries(snapshot.val())
+        itemsArray = Object.entries(snapshot.val())
 
-       // console.log(itemsArray)
-        
         clearTaskListEl()
     
         for (let i = 0; i < itemsArray.length; i++) {
@@ -76,9 +81,6 @@ function taskToObject(inputNameValue, inputDateValue){
         date: inputDateValue,
         state: "New"
     }
-
-    //taskArray.push(taskObj)
-    //console.log(taskArray)
     return taskObj
 }
 
@@ -93,10 +95,6 @@ function clearInputFields(){
 
 function appendItemToTaskListEl(item){
     let itemObject = item[1]
-
-    taskArray.push(itemObject)
-    console.log(taskArray)
-
     let itemID = itemObject.id
 
     // create div containing a task
@@ -115,24 +113,16 @@ function appendItemToTaskListEl(item){
     const taskStateInput = createInputField(taskContent, itemObject.state, itemID, "_state", 'state')
 
     taskStateInput.addEventListener("click", function(){
-        let currtentVal = taskStateInput.value
 
-        console.log(currtentVal)
-
-        switch(currtentVal) {
-            case "New":
-              taskStateInput.value = "Active"
-              console.log("ddd")
-              break;
-            case "Active":
-                taskStateInput.value = "Closed"
-              break;
-            case "Closed":
-                taskStateInput.value = "New"
-              break;
-            default:
-                console.log("default")  
-          }
+        cycleStateValue(taskStateInput)
+        
+        set(ref(database, 'toDoList/'+ itemID ), {
+            id: itemID,
+            name: taskNameInput.value,
+            date: taskDateInput.value,
+            state: taskStateInput.value
+        });
+        
     })
 
     // create div containing the delete and edit buttons
@@ -206,29 +196,70 @@ function createActionButton(btnClass, id, text){
 
 
 
-filterBtn.addEventListener("click", function() {
-    let list = document.getElementById("task-list");
-    let items = list.querySelectorAll("li");
-   
-    let filteredArray = taskArray
-    //var itemsArray = Array.prototype.slice.call(items);
-    //console.log(itemsArray)
-   
-    filteredArray.sort(function(a, b) {
-      var dateA = new Date(a.datum);
-      var dateB = new Date(b.datum);
-      return dateA - dateB;
-    });
+filterDateBtn.addEventListener("click", function() {
+    undoFilterArray = itemsArray
 
-    console.log(taskArray)
-    
-    /* items.forEach(function(item) {
-      list.removeChild(item);
-    });
-    
-    filteredArray.forEach(function(item) {
-      list.appendChild(item);
-    }); */
+    let sortedArray = [...itemsArray].sort((a,b) => (new Date(a[1].date)) - (new Date(b[1].date)))
+
+    clearTaskListEl()
+
+    for (let i = 0; i < sortedArray.length; i++) {
+        let currentItem = sortedArray[i]
+
+        appendItemToTaskListEl(currentItem)
+    }
+
 })
 
+filterStateBtn.addEventListener("click", function() {
+    undoFilterArray = itemsArray
 
+    let sortedArray = [...itemsArray]
+
+   for(let i=0;i<sortedArray.length;i++){
+        if(sortedArray[i][1].state != filterStateInput.value){
+            sortedArray.splice(i,1)   
+            i--         
+        }
+   }
+
+   clearTaskListEl()
+
+    for (let i = 0; i < sortedArray.length; i++) {
+        let currentItem = sortedArray[i]
+
+        appendItemToTaskListEl(currentItem)
+    }   
+})
+
+filterStateInput.addEventListener("click", function(){
+    cycleStateValue(filterStateInput)
+})
+
+function cycleStateValue(givenField){
+    let currtentVal = givenField.value
+
+        switch(currtentVal) {
+            case "New":
+                givenField.value = "Active"
+              break;
+            case "Active":
+                givenField.value = "Closed"
+              break;
+            case "Closed":
+                givenField.value = "New"
+              break;
+            default:
+                break;
+        }
+}
+
+undoFiletBtn.addEventListener("click", function(){
+    clearTaskListEl()
+
+    for (let i = 0; i < itemsArray.length; i++) {
+        let currentItem = itemsArray[i]
+
+        appendItemToTaskListEl(currentItem)
+    }
+})

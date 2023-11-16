@@ -19,6 +19,8 @@ html, body{
     background-color: var(--blue);
     padding: 10px;
     border-radius: 5px;
+    position: relative;
+   
     
 }
 
@@ -73,3 +75,4 @@ button:hover{
     margin-right: 10px;
     
 }
+
