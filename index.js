@@ -15,7 +15,8 @@ const taskDateEl = document.getElementById("add-date");
 const addItemBtn = document.getElementById("add-btn");
 const taskList = document.getElementById("task-list");
 
-const filterDateBtn = document.getElementById("filterDate-btn")
+const filterDateAscBtn = document.getElementById("filterDateAsc-btn")
+const filterDateDescBtn = document.getElementById("filterDateDesc-btn")
 const filterStateBtn = document.getElementById("filterState-btn")
 
 const filterStateInput = document.getElementById("filter-input")
@@ -196,9 +197,7 @@ function createActionButton(btnClass, id, text){
 
 
 
-filterDateBtn.addEventListener("click", function() {
-    undoFilterArray = itemsArray
-
+filterDateAscBtn.addEventListener("click", function() {
     let sortedArray = [...itemsArray].sort((a,b) => (new Date(a[1].date)) - (new Date(b[1].date)))
 
     clearTaskListEl()
@@ -208,7 +207,18 @@ filterDateBtn.addEventListener("click", function() {
 
         appendItemToTaskListEl(currentItem)
     }
+})
 
+filterDateDescBtn.addEventListener("click", function(){
+    let sortedArray = [...itemsArray].sort((a,b) => (new Date(b[1].date)) - (new Date(a[1].date)))
+
+    clearTaskListEl()
+
+    for (let i = 0; i < sortedArray.length; i++) {
+        let currentItem = sortedArray[i]
+
+        appendItemToTaskListEl(currentItem)
+    }
 })
 
 filterStateBtn.addEventListener("click", function() {

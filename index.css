@@ -14,14 +14,20 @@ html, body{
 }
 
 
-#task-control{
+.task-control{
     border: 1px solid black;
     background-color: var(--blue);
     padding: 10px;
     border-radius: 5px;
-    position: relative;
-   
-    
+    position: relative; 
+}
+
+#filter-div{
+    margin-top:5px;
+}
+#filter-h{
+    margin-top:5px;
+    margin-bottom: 5px;
 }
 
 input{
@@ -57,11 +63,16 @@ button{
     background-color: var(--pale-purple);
     border-radius: 10px;
     padding: 10px 15px;
+    cursor: pointer;
 
 }
 
 button:hover{
     box-shadow: var(--black);
+}
+
+#task-container{
+    
 }
 .action-btn{
     display: flex;
